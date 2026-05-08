@@ -1,4 +1,6 @@
 node_modules/
 .env
 .netlify/
-survey_analysis/
+
+survey_analysis/node_modules/
+survey_analysis/.env

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survey Results & Analysis – USTP Claveria Queue Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="icon" type="image/png" href="ic_launcher.png" />
+  <link rel="stylesheet" href="analysis.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ══ Site Header ══ -->
+<div class="site-header">
+  <div class="header-logo"><span>USTP</span> Claveria Campus</div>
+  <div class="header-sub">University of Science and Technology of Southern Philippines · Department of Information Technology</div>
+  <div class="header-title">
+    <h1>Survey Results &amp; Analysis<br>Queueing Experience at USTP Claveria Student Service Offices</h1>
+    <p>Multi-Office Queue Management System with Role-Based Access · IT 324 · S.Y. 2025–2026</p>
+  </div>
+</div>
+
+<!-- ══ Nav Tabs ══ -->
+<div class="analysis-tabs-bar">
+  <button class="atab-btn active" onclick="switchTab('overview')">Overview</button>
+  <button class="atab-btn" onclick="switchTab('profile')">Respondent Profile</button>
+  <button class="atab-btn" onclick="switchTab('part2')">Part II – Current Experience</button>
+  <button class="atab-btn" onclick="switchTab('part3')">Part III – Digital Need</button>
+  <button class="atab-btn" onclick="switchTab('openended')">Open-Ended</button>
+</div>
+
+<div class="container">
+
+  <!-- ══ Scale Guide ══ -->
+  <div class="scale-guide-bar">
+    <span class="sg-label">Descriptive scale:</span>
+    <span class="sg-pill sg-sa">4.21–5.00 · Strongly Agree</span>
+    <span class="sg-pill sg-a">3.41–4.20 · Agree</span>
+    <span class="sg-pill sg-n">2.61–3.40 · Neutral</span>
+    <span class="sg-pill sg-d">1.81–2.60 · Disagree</span>
+    <span class="sg-pill sg-sd">1.00–1.80 · Strongly Disagree</span>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 1: OVERVIEW
+  ══════════════════════════════════════════ -->
+  <div id="tab-overview" class="atab-panel active">
+
+    <div class="section-header">
+      <span class="part-tag">Summary</span>
+      <h2>At a Glance</h2>
+      <p>Key statistical findings across all survey parts. Weighted means (WM) are interpreted against the five-point descriptive equivalence scale above.</p>
+    </div>
+
+    <!-- Summary metric cards -->
+    <div class="metric-grid" id="overview-metrics">
+      <div class="metric-card">
+        <div class="metric-icon">👥</div>
+        <div class="metric-value" id="m-total">—</div>
+        <div class="metric-label">Total respondents</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-value" id="m-part2wm">—</div>
+        <div class="metric-label">Part II overall WM</div>
+        <div class="metric-desc" id="m-part2desc"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">💡</div>
+        <div class="metric-value" id="m-part3wm">—</div>
+        <div class="metric-label">Part III overall WM</div>
+        <div class="metric-desc" id="m-part3desc"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">🏢</div>
+        <div class="metric-value" id="m-personnel">—</div>
+        <div class="metric-label">Personnel respondents</div>
+        <div class="metric-desc">answered Q21–25</div>
+      </div>
+    </div>
+
+    <!-- Section comparison chart -->
+    <div class="card" style="margin-top: 0;">
+      <div class="card-heading">Section-level weighted mean comparison</div>
+      <div class="chart-container" style="height: 300px;">
+        <canvas id="chart-overview" role="img" aria-label="Bar chart comparing weighted means across all five survey sections">No chart data yet.</canvas>
+      </div>
+      <p class="chart-note">A higher score on sections A and B indicates more severe problems experienced. Section C is reverse-interpreted: a lower score means less satisfaction. Sections D and E reflect the perceived need and expected benefit of a digital solution.</p>
+    </div>
+
+    <!-- Formula display -->
+    <div class="card formula-card">
+      <div class="card-heading">Statistical instruments used</div>
+      <div class="formula-grid">
+        <div class="formula-block">
+          <div class="formula-title">Frequency &amp; Percentage</div>
+          <div class="formula-eq">% = (f ÷ N) × 100</div>
+          <div class="formula-desc">Used to describe respondent profile distributions and categorical response summaries. <em>f</em> = frequency of a specific response; <em>N</em> = total respondents.</div>
+        </div>
+        <div class="formula-block">
+          <div class="formula-title">Weighted Mean (WM)</div>
+          <div class="formula-eq">WM = Σ(f · x) ÷ N</div>
+          <div class="formula-desc">Applied per Likert item to compute an average agreement score. <em>x</em> = rating value (1–5); <em>f</em> = frequency at each value.</div>
+        </div>
+        <div class="formula-block">
+          <div class="formula-title">Standard Deviation (SD)</div>
+          <div class="formula-eq">SD = √[Σ(xᵢ − x̄)² ÷ (n−1)]</div>
+          <div class="formula-desc">Measures consistency of respondent ratings. A low SD signals broad agreement; a high SD signals divergent experiences.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 2: RESPONDENT PROFILE
+  ══════════════════════════════════════════ -->
+  <div id="tab-profile" class="atab-panel">
+    <div class="section-header">
+      <span class="part-tag">Part I</span>
+      <h2>Respondent Profile</h2>
+      <p>Frequency counts and percentages for all profile variables: role, offices frequented, and visit regularity. Formula: <strong>% = (f ÷ N) × 100</strong></p>
+    </div>
+
+    <div class="two-col">
+      <div class="card">
+        <div class="card-heading">Role distribution</div>
+        <div id="role-bars" class="freq-bar-list"></div>
+        <div class="chart-container" style="height:220px; margin-top:16px;">
+          <canvas id="chart-roles" role="img" aria-label="Donut chart of respondent role distribution">No data.</canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-heading">Visit frequency</div>
+        <div id="freq-bars" class="freq-bar-list"></div>
+        <div class="chart-container" style="height:220px; margin-top:16px;">
+          <canvas id="chart-freq" role="img" aria-label="Donut chart of visit frequency">No data.</canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-heading">Office visit counts</div>
+      <p class="card-sub">Respondents may select multiple offices. Counts reflect number of respondents who visit each office.</p>
+      <div id="office-bars" class="freq-bar-list" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 3: PART II
+  ══════════════════════════════════════════ -->
+  <div id="tab-part2" class="atab-panel">
+    <div class="section-header">
+      <span class="part-tag">Part II</span>
+      <h2>Current Queueing Experience</h2>
+      <p>Weighted means and standard deviations for Q1–15, grouped into three thematic sections. All items use a 5-point Likert scale anchored at 1 (Strongly Disagree) and 5 (Strongly Agree).</p>
+    </div>
+
+    <div class="subsection-tabs">
+      <button class="stab active" onclick="switchSubTab('part2','a')">A · Waiting Time</button>
+      <button class="stab" onclick="switchSubTab('part2','b')">B · Transparency</button>
+      <button class="stab" onclick="switchSubTab('part2','c')">C · Satisfaction</button>
+    </div>
+
+    <div id="part2-sub-a" class="stab-panel active">
+      <div class="subsection-label">Section A – Waiting Time and Queue Length (Q1–5)</div>
+      <div id="tbl-a"></div>
+      <div class="chart-container" style="height:240px; margin-top:18px;">
+        <canvas id="chart-a" role="img" aria-label="Bar chart of Section A item weighted means">No data.</canvas>
+      </div>
+    </div>
+    <div id="part2-sub-b" class="stab-panel">
+      <div class="subsection-label">Section B – Queue Transparency and Information Access (Q6–10)</div>
+      <div id="tbl-b"></div>
+      <div class="chart-container" style="height:240px; margin-top:18px;">
+        <canvas id="chart-b" role="img" aria-label="Bar chart of Section B item weighted means">No data.</canvas>
+      </div>
+    </div>
+    <div id="part2-sub-c" class="stab-panel">
+      <div class="subsection-label">Section C – Overall Satisfaction with Current Queueing System (Q11–15)</div>
+      <div id="tbl-c"></div>
+      <div class="chart-container" style="height:240px; margin-top:18px;">
+        <canvas id="chart-c" role="img" aria-label="Bar chart of Section C item weighted means">No data.</canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 4: PART III
+  ══════════════════════════════════════════ -->
+  <div id="tab-part3" class="atab-panel">
+    <div class="section-header">
+      <span class="part-tag">Part III</span>
+      <h2>Need for a Digital Queue Management System</h2>
+      <p>Weighted means and standard deviations for Q16–25. Section D is required for all respondents. Section E (Q21–25) is optional and intended for service personnel only.</p>
+    </div>
+
+    <div class="subsection-tabs">
+      <button class="stab active" onclick="switchSubTab('part3','d')">D · Perceived Need</button>
+      <button class="stab" onclick="switchSubTab('part3','e')">E · Personnel Benefits</button>
+    </div>
+
+    <div id="part3-sub-d" class="stab-panel active">
+      <div class="subsection-label">Section D – Perceived Need and Openness to a Digital Solution (Q16–20)</div>
+      <div id="tbl-d"></div>
+      <div class="chart-container" style="height:240px; margin-top:18px;">
+        <canvas id="chart-d" role="img" aria-label="Bar chart of Section D item weighted means">No data.</canvas>
+      </div>
+    </div>
+    <div id="part3-sub-e" class="stab-panel">
+      <div class="subsection-label">Section E – Expected Benefits for Service Personnel (Q21–25)</div>
+      <div id="tbl-e"></div>
+      <div class="chart-container" style="height:240px; margin-top:18px;">
+        <canvas id="chart-e" role="img" aria-label="Bar chart of Section E item weighted means">No data.</canvas>
+      </div>
+      <p class="required-note" style="margin-top:10px;">* Q21–25 are completed only by Service Personnel / Teller / Office Staff. n shown reflects personnel respondents only.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TAB 5: OPEN-ENDED
+  ══════════════════════════════════════════ -->
+  <div id="tab-openended" class="atab-panel">
+    <div class="section-header">
+      <span class="part-tag">Part IV</span>
+      <h2>Open-Ended Response Themes</h2>
+      <p>Qualitative thematic content summary of Q26–28. Recurring keywords and themes across responses are identified and presented alongside quantitative findings to provide richer context and illustration of the human experience behind the numbers.</p>
+    </div>
+
+    <div class="oe-block">
+      <div class="oe-q-tag">Q26</div>
+      <div class="oe-q-text">Most frustrating queueing experience</div>
+      <div class="oe-themes" id="oe-q26-themes"></div>
+      <div class="oe-summary" id="oe-q26">No data loaded.</div>
+    </div>
+
+    <div class="oe-block">
+      <div class="oe-q-tag">Q27</div>
+      <div class="oe-q-text">Desired improvements to the current system</div>
+      <div class="oe-themes" id="oe-q27-themes"></div>
+      <div class="oe-summary" id="oe-q27">No data loaded.</div>
+    </div>
+
+    <div class="oe-block">
+      <div class="oe-q-tag">Q28</div>
+      <div class="oe-q-text">Priority features in a digital queue management system</div>
+      <div class="oe-themes" id="oe-q28-themes"></div>
+      <div class="oe-summary" id="oe-q28">No data loaded.</div>
+    </div>
+
+    <p class="required-note" style="margin-top: 8px;">Open-ended responses are analyzed through thematic content summary. Common themes are counted and presented as supporting qualitative evidence alongside quantitative findings, illustrating the human experience behind the numbers (Research Methodology, §6.1).</p>
+  </div>
+
+  <!-- ══ Load notice / controls ══ -->
+  <div class="load-notice" id="load-notice">
+    <div class="load-notice-title">📊 Connect to live data</div>
+    <p>This page displays results when connected to the Neon PostgreSQL database. Load a representative sample dataset below to preview all charts and tables, or call <code>loadAnalysisData(data)</code> from your API integration.</p>
+    <div class="load-btns">
+      <button class="btn btn-primary" onclick="loadSampleData()">Load sample data →</button>
+      <button class="btn btn-outline" onclick="document.getElementById('load-notice').style.display='none'">Dismiss</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script src="analysis.js"></script>
+</body>
+</html>

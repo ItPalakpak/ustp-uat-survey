@@ -251,7 +251,7 @@ async function submitSurvey() {
       }
       throw new Error('Server error');
     }
-    goTo(5);
+    goTo(6);
   } catch (e) {
     err.classList.add('show');
     btn.disabled = false;
