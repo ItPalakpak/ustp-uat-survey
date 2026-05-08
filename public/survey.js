@@ -186,6 +186,7 @@ async function submitSurvey() {
   }
 
   const payload = {
+    consent_given: true,
     profile: { offices, role, frequency },
     current_experience,
     digital_need,

@@ -152,6 +152,39 @@ In the Neon SQL Editor, run `SELECT * FROM survey_responses;` then click the **"
 
 ---
 
+## Data Retention & Privacy Policy
+
+This survey complies with the **Data Privacy Act of 2012 (Republic Act No. 10173)** and the regulations of the **National Privacy Commission (NPC)**.
+
+### What data is collected
+- **Profile**: role (Student / Personnel / Others), offices visited, visit frequency — these are categorical and **cannot be used to identify individual respondents**.
+- **Likert-scale responses** (Q1–25): numeric ratings from 1–5.
+- **Open-ended responses** (Q26–28): free-text answers, automatically scanned and stripped of accidental PII (email addresses, phone numbers, credit-card-like number sequences) before storage.
+- **Consent record**: a boolean (`consent_given`) and timestamp (`consent_at`) confirming the respondent agreed to participate.
+
+### What is **NOT** collected
+- No IP addresses, browser fingerprints, cookies, or any other tracking identifiers are stored.
+- No names, student IDs, or contact details are collected.
+
+### Retention period
+- Survey responses are retained for **1 (one) year** from the date of submission (`submitted_at`), or until the research study is concluded — whichever comes first.
+- After the retention period, all response rows are **permanently deleted** from the Neon PostgreSQL database.
+
+### To purge expired data
+Run this query in the Neon SQL Editor after the retention period:
+```sql
+DELETE FROM survey_responses
+WHERE submitted_at < NOW() - INTERVAL '1 year';
+```
+
+### Right to withdraw
+Respondents may **withdraw at any time** before submitting the survey by simply closing the browser tab. No data is saved until the respondent clicks **"Submit Survey"**. Partial/incomplete responses are **never** stored.
+
+### Data access
+Only the **named researchers** and their faculty adviser have access to the raw data in the Neon database. Aggregated results (averages, counts) may be shared in the research output.
+
+---
+
 ## Troubleshooting
 
 | Problem | Solution |

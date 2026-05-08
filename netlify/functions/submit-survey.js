@@ -17,12 +17,21 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  const { profile, current_experience, digital_need, open_ended } = body;
+  const { profile, current_experience, digital_need, open_ended, consent_given } = body;
+
+  // Reject submissions without explicit consent
+  if (!consent_given) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Consent is required to submit this survey' }) };
+  }
 
   // Basic validation — require profile and current_experience (Q1–15)
   if (!profile || !current_experience || !digital_need) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
   }
+
+  // Strip accidental PII from open-ended text fields
+  const PII_PATTERN = /(\b\d{4}\s?\d{4}\s?\d{4}\b|\b\d{2}-\d{2}-\d{4}\b|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b|\b09\d{9}\b|\b\+63\d{10}\b)/g;
+  const stripPII = (str) => (str && typeof str === 'string') ? str.replace(PII_PATTERN, '[REDACTED]') : str;
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -57,6 +66,9 @@ exports.handler = async (event) => {
         -- Part IV: Open-Ended (Q26–28)
         oe_q26, oe_q27, oe_q28,
 
+        -- Consent tracking
+        consent_given, consent_at,
+
         submitted_at
       ) VALUES (
         $1,  $2,  $3,
@@ -66,6 +78,7 @@ exports.handler = async (event) => {
         $19, $20, $21, $22, $23,
         $24, $25, $26, $27, $28,
         $29, $30, $31,
+        $32, NOW(),
         NOW()
       )
       RETURNING id;
@@ -112,10 +125,13 @@ exports.handler = async (event) => {
       digital_need.q24 || null,              // $27
       digital_need.q25 || null,              // $28
 
-      // Part IV — Open-Ended
-      open_ended?.q26 || null,               // $29
-      open_ended?.q27 || null,               // $30
-      open_ended?.q28 || null,               // $31
+      // Part IV — Open-Ended (PII stripped)
+      stripPII(open_ended?.q26) || null,    // $29
+      stripPII(open_ended?.q27) || null,    // $30
+      stripPII(open_ended?.q28) || null,    // $31
+
+      // Consent
+      true,                                   // $32  consent_given
     ];
 
     const result = await client.query(query, values);
