@@ -241,7 +241,16 @@ async function submitSurvey() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error('Server error');
+    if (!res.ok) {
+      if (res.status === 429) {
+        err.textContent = '⚠ This survey has reached its maximum number of responses and is now closed. Thank you for your interest!';
+        err.classList.add('show');
+        btn.disabled = true;
+        btn.textContent = 'Survey Closed';
+        return;
+      }
+      throw new Error('Server error');
+    }
     goTo(5);
   } catch (e) {
     err.classList.add('show');

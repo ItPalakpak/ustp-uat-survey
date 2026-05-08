@@ -38,8 +38,21 @@ exports.handler = async (event) => {
     ssl: { rejectUnauthorized: false } // Required for Neon
   });
 
+  const MAX_RESPONSES = 400;
+
   try {
     await client.connect();
+
+    // Check current response count before accepting
+    const countResult = await client.query('SELECT COUNT(*) AS cnt FROM survey_responses');
+    if (parseInt(countResult.rows[0].cnt) >= MAX_RESPONSES) {
+      await client.end();
+      return {
+        statusCode: 429,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Survey is closed', detail: 'We have reached the maximum number of responses. Thank you for your interest!' })
+      };
+    }
 
     const query = `
       INSERT INTO survey_responses (
