@@ -81,6 +81,7 @@ function buildLikertSubsection(items, container, prefix, startNum, subsectionLab
       cells += `<div class="likert-cell"><input type="radio" name="${prefix}_q${qNum}" value="${v}" /></div>`;
     }
     row.innerHTML = cells;
+    row.querySelectorAll('input[type="radio"]').forEach(attachClearable);
     container.appendChild(row);
   });
 
@@ -114,7 +115,26 @@ function buildAllLikert() {
 function updateConsentBtn() {
   const boxes = document.querySelectorAll('input[name="consent"]');
   const allChecked = [...boxes].every(cb => cb.checked);
+  const someChecked = [...boxes].some(cb => cb.checked);
+
+  // Sync master checkbox state
+  const master = document.getElementById('consent-select-all');
+  if (master) {
+    master.checked = allChecked;
+    master.indeterminate = !allChecked && someChecked;
+    const wrapper = document.getElementById('consent-select-all-wrapper');
+    wrapper.classList.toggle('consent-item--checked', allChecked);
+  }
+
   document.getElementById('consent-btn').disabled = !allChecked;
+}
+
+function toggleAllConsent(masterCb) {
+  const boxes = document.querySelectorAll('input[name="consent"]');
+  boxes.forEach(cb => { cb.checked = masterCb.checked; });
+  const wrapper = document.getElementById('consent-select-all-wrapper');
+  wrapper.classList.toggle('consent-item--checked', masterCb.checked);
+  document.getElementById('consent-btn').disabled = !masterCb.checked;
 }
 
 function validateConsent() {
@@ -147,14 +167,14 @@ function validateAndGoTo(fromStep, toStep) {
   const err = document.getElementById(`err-${fromStep}`);
   err.classList.remove('show');
 
-  if (fromStep === 1) {
+  if (fromStep === 2) {
     const offices = document.querySelectorAll('input[name="office"]:checked');
     const role    = document.querySelector('input[name="role"]:checked');
     const freq    = document.querySelector('input[name="frequency"]:checked');
     if (!offices.length || !role || !freq) { err.classList.add('show'); return; }
   }
 
-  if (fromStep === 2) {
+  if (fromStep === 3) {
     // Require Q1–15 (current queueing experience)
     for (let q = 1; q <= 15; q++) {
       if (!document.querySelector(`input[name="cur_q${q}"]:checked`)) {
@@ -164,7 +184,7 @@ function validateAndGoTo(fromStep, toStep) {
     }
   }
 
-  if (fromStep === 3) {
+  if (fromStep === 4) {
     // Require Q16–20 (digital need); Q21–25 are optional (personnel only)
     for (let q = 16; q <= 20; q++) {
       if (!document.querySelector(`input[name="dgt_q${q}"]:checked`)) {
@@ -230,7 +250,32 @@ async function submitSurvey() {
   }
 }
 
+/* ── Clearable Radios ── */
+
+/* Tracks whether a radio was already checked before the click fires */
+function initClearableRadios() {
+  document.querySelectorAll('input[type="radio"]').forEach(attachClearable);
+}
+
+function attachClearable(radio) {
+  if (radio.dataset.clearable) return;   // already initialised
+  radio.dataset.clearable = '1';
+
+  radio.addEventListener('mousedown', () => {
+    radio._wasChecked = radio.checked;
+  });
+
+  radio.addEventListener('click', () => {
+    if (radio._wasChecked) {
+      /* Second click on the already-selected option — deselect */
+      radio.checked = false;
+      radio._wasChecked = false;
+    }
+  });
+}
+
 /* ── Init ── */
 document.addEventListener('DOMContentLoaded', () => {
   buildAllLikert();
+  initClearableRadios();
 });

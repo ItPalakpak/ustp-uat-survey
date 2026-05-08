@@ -1,6 +1,6 @@
 /* ============================================================
    USTP Claveria Needs Assessment Survey — Stylesheet
-   Blue & White palette | RA 10173-compliant privacy UI
+   Blue & Cool-White palette | RA 10173-compliant privacy UI
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
@@ -10,22 +10,25 @@
   --blue-dark:    #0A2A6E;
   --blue-mid:     #1A4DB5;
   --blue-light:   #3B72D9;
-  --blue-pale:    #E8EFFC;
-  --blue-ghost:   #F0F5FF;
+  --blue-pale:    #E4EAF7;
+  --blue-ghost:   #EDF0F8;
   --accent:       #2563EB;
   --accent-hover: #1D4ED8;
   --gold:         #F59E0B;
   --gold-hover:   #D97706;
-  --cream:        #F8FAFF;
+  --cream:        #F2F3F6;          /* cooler, darker off-white */
+  --surface:      #F7F8FA;          /* card / block surface */
+  --surface-deep: #EDEEF2;         /* hover / pressed state */
   --dark:         #0F172A;
   --mid:          #475569;
-  --border:       #CBD5E1;
+  --border:       #D1D5E0;
+  --border-soft:  #E2E5EE;
   --white:        #FFFFFF;
   --success:      #16A34A;
-  --error-bg:     #EFF6FF;
-  --error-border: #93C5FD;
+  --error-bg:     #F0F4FF;
+  --error-border: #A5B4FC;
   --radius:       12px;
-  --shadow:       0 2px 16px rgba(26,77,181,0.10);
+  --shadow:       0 1px 4px rgba(15,23,42,0.07), 0 4px 16px rgba(15,23,42,0.05);
 }
 
 /* ── Reset & Base ── */
@@ -90,9 +93,9 @@ body {
 /* ── Steps Bar ── */
 .steps-bar {
   display: flex; justify-content: center;
-  background: var(--white); border-bottom: 2px solid var(--border);
+  background: var(--white); border-bottom: 1px solid var(--border-soft);
   position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 12px rgba(26,77,181,0.08);
+  box-shadow: 0 1px 8px rgba(15,23,42,0.07);
 }
 .step-btn {
   flex: 1; max-width: 160px; padding: 14px 6px;
@@ -125,12 +128,15 @@ body {
 /* ── Section Header ── */
 .section-header {
   margin-bottom: 28px; padding-bottom: 16px;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid var(--border-soft);
 }
 .section-header .part-tag {
-  display: inline-block; background: var(--blue-mid); color: var(--white);
+  display: inline-block;
+  background: var(--surface-deep);
+  color: var(--blue-dark);
   font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em;
   text-transform: uppercase; padding: 4px 10px; border-radius: 4px; margin-bottom: 10px;
+  border: 1px solid var(--border);
 }
 .section-header h2 {
   font-family: 'Playfair Display', serif;
@@ -142,15 +148,16 @@ body {
 /* ── Privacy Blocks ── */
 .privacy-block {
   display: flex; gap: 16px; align-items: flex-start;
-  background: var(--white); border: 1.5px solid var(--border);
-  border-left: 5px solid var(--blue-light);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius); padding: 20px 22px;
-  margin-bottom: 16px; box-shadow: var(--shadow);
+  margin-bottom: 12px; box-shadow: var(--shadow);
   font-size: 0.86rem; color: var(--mid); line-height: 1.7;
 }
+/* accent variant — same flat treatment, slightly cooler bg */
 .privacy-block--accent {
-  border-left-color: var(--accent);
   background: var(--blue-ghost);
+  border-color: var(--border);
 }
 .privacy-block-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
 .privacy-block-title {
@@ -164,9 +171,9 @@ body {
 .privacy-list li { list-style: disc; }
 .privacy-highlight {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--blue-pale); border-radius: 8px;
-  font-size: 0.83rem; color: var(--blue-dark);
-  border-left: 3px solid var(--blue-mid);
+  background: var(--surface-deep); border-radius: 8px;
+  font-size: 0.83rem; color: var(--dark);
+  border: 1px solid var(--border);
 }
 .privacy-link {
   color: var(--blue-mid); text-decoration: underline;
@@ -175,12 +182,57 @@ body {
 
 /* ── Consent Box ── */
 .consent-box {
-  background: var(--white); border: 1.5px solid var(--border);
-  border-left: 5px solid var(--blue-light); border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
   padding: 24px 28px; font-size: 0.88rem; line-height: 1.75;
   color: var(--mid); margin-bottom: 24px; box-shadow: var(--shadow);
 }
 .consent-box strong { color: var(--dark); }
+
+/* ── Consent Select-All ── */
+.consent-item--select-all {
+  background: var(--blue-ghost);
+  border-color: var(--border);
+  font-weight: 600;
+  color: var(--blue-dark);
+}
+.consent-item--select-all:hover {
+  border-color: var(--blue-mid);
+  background: var(--blue-pale);
+}
+.consent-item--select-all.consent-item--checked {
+  border-color: var(--success);
+  background: #F0FDF4;
+  color: var(--dark);
+}
+.consent-item--select-all input[type="checkbox"] {
+  accent-color: var(--blue-mid);
+  width: 18px; height: 18px;
+}
+.consent-item--select-all.consent-item--checked input[type="checkbox"] {
+  accent-color: var(--success);
+}
+
+.consent-divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 12px 0;
+  position: relative;
+}
+.consent-divider::before {
+  content: 'or confirm individually';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  padding: 0 10px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
 
 /* ── Active Consent Checklist ── */
 .consent-checklist {
@@ -189,12 +241,12 @@ body {
 }
 .consent-item {
   display: flex; align-items: flex-start; gap: 12px;
-  padding: 14px 16px; border: 1.5px solid var(--border);
-  border-radius: 10px; background: var(--blue-ghost);
+  padding: 14px 16px; border: 1px solid var(--border-soft);
+  border-radius: 10px; background: var(--surface);
   cursor: pointer; transition: all 0.15s; user-select: none;
   font-size: 0.86rem; color: var(--mid); line-height: 1.6;
 }
-.consent-item:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+.consent-item:hover { border-color: var(--border); background: var(--surface-deep); }
 .consent-item:has(input:checked) {
   border-color: var(--success); background: #F0FDF4; color: var(--dark);
 }
@@ -207,8 +259,9 @@ body {
 /* ── Submit Reminder ── */
 .submit-reminder {
   display: flex; gap: 14px; align-items: flex-start;
-  background: var(--blue-ghost); border: 1.5px solid var(--blue-pale);
-  border-left: 5px solid var(--blue-mid); border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
   padding: 16px 20px; margin-bottom: 20px;
   font-size: 0.84rem; color: var(--mid); line-height: 1.7;
 }
@@ -217,11 +270,12 @@ body {
 
 /* ── Card ── */
 .card {
-  background: var(--white); border: 1.5px solid var(--border);
+  background: var(--white);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius); padding: 24px;
   margin-bottom: 18px; box-shadow: var(--shadow); transition: box-shadow 0.2s;
 }
-.card:hover { box-shadow: 0 4px 24px rgba(26,77,181,0.13); }
+.card:hover { box-shadow: 0 2px 20px rgba(15,23,42,0.09); }
 
 /* ── Form Elements ── */
 label.field-label {
@@ -231,10 +285,10 @@ label.field-label {
 .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .checkbox-group label {
   display: flex; align-items: center; gap: 8px; font-size: 0.84rem;
-  cursor: pointer; padding: 8px 14px; border: 1.5px solid var(--border);
-  border-radius: 8px; background: var(--blue-ghost); transition: all 0.15s; user-select: none;
+  cursor: pointer; padding: 8px 14px; border: 1px solid var(--border-soft);
+  border-radius: 8px; background: var(--surface); transition: all 0.15s; user-select: none;
 }
-.checkbox-group label:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+.checkbox-group label:hover { border-color: var(--border); background: var(--surface-deep); }
 .checkbox-group input[type="checkbox"] { accent-color: var(--blue-mid); width: 15px; height: 15px; }
 .checkbox-group label:has(input:checked) {
   border-color: var(--blue-mid); background: var(--blue-pale);
@@ -243,24 +297,24 @@ label.field-label {
 .radio-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .radio-group label {
   display: flex; align-items: center; gap: 8px; font-size: 0.84rem;
-  cursor: pointer; padding: 8px 14px; border: 1.5px solid var(--border);
-  border-radius: 8px; background: var(--blue-ghost); transition: all 0.15s; user-select: none;
+  cursor: pointer; padding: 8px 14px; border: 1px solid var(--border-soft);
+  border-radius: 8px; background: var(--surface); transition: all 0.15s; user-select: none;
 }
-.radio-group label:hover { border-color: var(--blue-light); background: var(--blue-pale); }
+.radio-group label:hover { border-color: var(--border); background: var(--surface-deep); }
 .radio-group input[type="radio"] { accent-color: var(--blue-mid); }
 .radio-group label:has(input:checked) {
   border-color: var(--blue-mid); background: var(--blue-pale);
   color: var(--blue-dark); font-weight: 600;
 }
 input[type="text"], textarea {
-  width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+  width: 100%; padding: 11px 14px; border: 1px solid var(--border-soft);
   border-radius: 8px; font-family: 'DM Sans', sans-serif;
-  font-size: 0.88rem; color: var(--dark); background: var(--blue-ghost);
+  font-size: 0.88rem; color: var(--dark); background: var(--surface);
   transition: border-color 0.15s, background 0.15s; outline: none;
 }
 input[type="text"]:focus, textarea:focus {
   border-color: var(--blue-mid); background: var(--white);
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
 }
 textarea { min-height: 90px; resize: vertical; }
 
@@ -277,10 +331,10 @@ textarea { min-height: 90px; resize: vertical; }
 .likert-row {
   display: grid; grid-template-columns: 1fr repeat(5, 52px);
   gap: 4px; align-items: center; padding: 12px 0;
-  border-bottom: 1px solid var(--border); transition: background 0.15s;
+  border-bottom: 1px solid var(--border-soft); transition: background 0.15s;
 }
 .likert-row:last-child { border-bottom: none; }
-.likert-row:hover { background: var(--blue-ghost); border-radius: 8px; }
+.likert-row:hover { background: var(--surface); border-radius: 8px; }
 .likert-statement { font-size: 0.84rem; line-height: 1.5; color: var(--dark); padding-right: 12px; }
 .likert-statement strong { font-size: 0.78rem; color: var(--blue-mid); font-weight: 700; }
 .likert-cell { display: flex; justify-content: center; align-items: center; }
@@ -289,16 +343,20 @@ textarea { min-height: 90px; resize: vertical; }
 .scale-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
 .legend-item {
   display: flex; align-items: center; gap: 5px; font-size: 0.74rem;
-  color: var(--mid); background: var(--white); border: 1px solid var(--border);
+  color: var(--mid); background: var(--white); border: 1px solid var(--border-soft);
   padding: 4px 10px; border-radius: 20px;
 }
 .legend-item .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
+/* Subsection label — flat pill, no left border accent */
 .subsection-label {
-  display: inline-block; background: var(--blue-pale); color: var(--blue-dark);
+  display: inline-block;
+  background: var(--surface-deep);
+  color: var(--blue-dark);
   font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 4px 10px; border-radius: 4px;
-  margin-bottom: 14px; border-left: 3px solid var(--blue-mid);
+  text-transform: uppercase; padding: 4px 10px; border-radius: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
 }
 
 /* ── Open-Ended ── */
@@ -325,18 +383,18 @@ textarea { min-height: 90px; resize: vertical; }
   font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.2s;
 }
 .btn-outline {
-  background: transparent; border: 2px solid var(--border); color: var(--mid);
+  background: transparent; border: 1.5px solid var(--border); color: var(--mid);
 }
 .btn-outline:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
 .btn-primary {
   background: var(--blue-mid); color: var(--white);
-  box-shadow: 0 4px 14px rgba(26,77,181,0.25);
+  box-shadow: 0 4px 14px rgba(26,77,181,0.22);
 }
 .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
 .btn-primary:disabled { background: #93C5FD; cursor: not-allowed; transform: none; box-shadow: none; }
 .btn-gold {
   background: var(--gold); color: var(--dark); font-weight: 700;
-  box-shadow: 0 4px 14px rgba(245,158,11,0.3);
+  box-shadow: 0 4px 14px rgba(245,158,11,0.28);
 }
 .btn-gold:hover { background: var(--gold-hover); transform: translateY(-1px); }
 
@@ -346,7 +404,7 @@ textarea { min-height: 90px; resize: vertical; }
   width: 80px; height: 80px;
   background: linear-gradient(135deg, var(--success), #22C55E);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; margin: 0 auto 24px; box-shadow: 0 8px 24px rgba(22,163,74,0.35);
+  font-size: 2rem; margin: 0 auto 24px; box-shadow: 0 8px 24px rgba(22,163,74,0.3);
 }
 .success-screen h2 {
   font-family: 'Playfair Display', serif; font-size: 1.8rem;
@@ -355,14 +413,15 @@ textarea { min-height: 90px; resize: vertical; }
 .success-screen p { font-size: 0.9rem; color: var(--mid); line-height: 1.7; max-width: 480px; margin: 0 auto 8px; }
 .success-privacy-note {
   max-width: 520px; margin: 0 auto; padding: 16px 20px;
-  background: var(--blue-ghost); border: 1.5px solid var(--border);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
   border-radius: var(--radius); font-size: 0.82rem; color: var(--mid);
   line-height: 1.7; text-align: left;
 }
 
 /* ── Error / Validation ── */
 .error-msg {
-  background: var(--error-bg); border: 1.5px solid var(--error-border);
+  background: var(--error-bg); border: 1px solid var(--error-border);
   border-radius: 8px; padding: 12px 16px; font-size: 0.82rem;
   color: var(--blue-dark); margin-top: 16px; display: none;
 }

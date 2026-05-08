@@ -156,6 +156,14 @@
 
     <div class="card">
       <label class="field-label">Please confirm each of the following:</label>
+
+      <label class="consent-item consent-item--select-all" id="consent-select-all-wrapper">
+        <input type="checkbox" id="consent-select-all" onchange="toggleAllConsent(this)">
+        <span>I have read all statements and <strong>confirm all of the following</strong> at once.</span>
+      </label>
+
+      <div class="consent-divider"></div>
+
       <div class="consent-checklist">
 
         <label class="consent-item">
