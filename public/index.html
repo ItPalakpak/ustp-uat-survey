@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Needs Assessment Survey – USTP Claveria Queue Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="survey.css" />
+</head>
+<body>
+
+<!-- ══ Site Header ══ -->
+<div class="site-header">
+  <div class="header-logo">
+    <span>USTP</span> Claveria Campus
+  </div>
+  <div class="header-sub">University of Science and Technology of Southern Philippines · Department of Information Technology</div>
+  <div class="header-title">
+    <h1>Needs Assessment Survey<br>Queueing Experience at USTP Claveria Student Service Offices</h1>
+    <p>For the Proposed: Multi-Office Queue Management System with Role-Based Access · IT 324 · S.Y. 2025–2026</p>
+  </div>
+</div>
+
+<!-- ══ Steps Bar ══ -->
+<div class="steps-bar">
+  <button class="step-btn active" data-step="0">
+    <span class="step-num">1</span>Consent
+  </button>
+  <button class="step-btn" data-step="1">
+    <span class="step-num">2</span>Profile
+  </button>
+  <button class="step-btn" data-step="2">
+    <span class="step-num">3</span>Current Queue
+  </button>
+  <button class="step-btn" data-step="3">
+    <span class="step-num">4</span>Digital Need
+  </button>
+  <button class="step-btn" data-step="4">
+    <span class="step-num">5</span>Open-Ended
+  </button>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECTION 0: Consent ══ -->
+  <div class="section active" id="section-0">
+    <div class="section-header">
+      <span class="part-tag">Introduction</span>
+      <h2>Informed Consent</h2>
+      <p>Please read the following carefully before proceeding.</p>
+    </div>
+
+    <div class="consent-box">
+      <p><strong>Dear Respondent,</strong></p><br>
+      <p>This survey aims to assess the current queueing experience at USTP Claveria student service offices and determine the need for a digital queue management system.</p><br>
+      <p>Your <strong>honest responses</strong> are greatly valued. All information collected will be kept <strong>strictly confidential</strong> and used solely for academic research purposes. There are no right or wrong answers — please respond based on your actual experience.</p><br>
+      <p>Estimated completion time: <strong>5–8 minutes.</strong></p>
+    </div>
+
+    <div class="card">
+      <label class="field-label">By clicking "I Agree &amp; Continue", you confirm that:</label>
+      <div style="font-size:0.84rem; color:var(--mid); line-height:1.9;">
+        ✅ &nbsp;You have read and understood the information above.<br>
+        ✅ &nbsp;You consent to participate in this survey voluntarily.<br>
+        ✅ &nbsp;Your responses will be kept confidential and used for academic purposes only.
+      </div>
+    </div>
+
+    <div class="nav-row" style="justify-content:flex-end;">
+      <button class="btn btn-primary" onclick="goTo(1)">I Agree &amp; Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 1: Respondent Profile ══ -->
+  <div class="section" id="section-1">
+    <div class="section-header">
+      <span class="part-tag">Part I</span>
+      <h2>Respondent Profile</h2>
+      <p>Please fill in or check the box that best describes you.</p>
+    </div>
+
+    <!-- Q1: Role -->
+    <div class="card">
+      <label class="field-label">1. What is your role at USTP Claveria?</label>
+      <div class="radio-group" id="q-role">
+        <label><input type="radio" name="role" value="Student"><span>Student</span></label>
+        <label><input type="radio" name="role" value="Faculty Member"><span>Faculty Member</span></label>
+        <label><input type="radio" name="role" value="Administrative Staff"><span>Administrative Staff</span></label>
+        <label><input type="radio" name="role" value="Alumni"><span>Alumni</span></label>
+        <label><input type="radio" name="role" value="External Visitor / Guest"><span>External Visitor / Guest</span></label>
+        <label><input type="radio" name="role" value="Service Personnel / Teller / Office Staff"><span>Service Personnel / Teller / Office Staff</span></label>
+      </div>
+    </div>
+
+    <!-- Q2: Offices visited -->
+    <div class="card">
+      <label class="field-label">2. Which student service office(s) do you most frequently visit or work in? <em style="font-weight:400;color:var(--mid)">(Check all that apply)</em></label>
+      <div class="checkbox-group" id="q-office">
+        <label><input type="checkbox" name="office" value="Office of the Registrar"><span>Office of the Registrar</span></label>
+        <label><input type="checkbox" name="office" value="Cashier Office"><span>Cashier Office</span></label>
+        <label><input type="checkbox" name="office" value="Office of Student Affairs (OSA)"><span>Office of Student Affairs (OSA)</span></label>
+        <label><input type="checkbox" name="office" value="Library"><span>Library</span></label>
+      </div>
+    </div>
+
+    <!-- Q3: Visit frequency -->
+    <div class="card">
+      <label class="field-label">3. How often do you visit any of the above offices in a semester?</label>
+      <div class="radio-group" id="q-frequency">
+        <label><input type="radio" name="frequency" value="Once or twice"><span>Once or twice</span></label>
+        <label><input type="radio" name="frequency" value="3–5 times"><span>3–5 times</span></label>
+        <label><input type="radio" name="frequency" value="6–10 times"><span>6–10 times</span></label>
+        <label><input type="radio" name="frequency" value="More than 10 times"><span>More than 10 times</span></label>
+      </div>
+    </div>
+
+    <div class="error-msg" id="err-1">⚠ Please select your role, at least one office, and visit frequency before continuing.</div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goTo(0)">← Back</button>
+      <button class="btn btn-primary" onclick="validateAndGoTo(1, 2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: Current Queueing Experience (Part II) ══ -->
+  <div class="section" id="section-2">
+    <div class="section-header">
+      <span class="part-tag">Part II</span>
+      <h2>Current Queueing Experience</h2>
+      <p>Rate your agreement with the following statements based on your personal experience at USTP Claveria student service offices.</p>
+    </div>
+
+    <div class="scale-legend">
+      <div class="legend-item"><div class="dot" style="background:var(--blue-dark)"></div>5 – Strongly Agree</div>
+      <div class="legend-item"><div class="dot" style="background:var(--blue-mid)"></div>4 – Agree</div>
+      <div class="legend-item"><div class="dot" style="background:#64748B"></div>3 – Neutral</div>
+      <div class="legend-item"><div class="dot" style="background:#F59E0B"></div>2 – Disagree</div>
+      <div class="legend-item"><div class="dot" style="background:#DC2626"></div>1 – Strongly Disagree</div>
+    </div>
+
+    <div class="card">
+      <div id="part2-items"></div>
+    </div>
+
+    <div class="error-msg" id="err-2">⚠ Please answer all 15 statements (Items 1–15) before proceeding.</div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goTo(1)">← Back</button>
+      <button class="btn btn-primary" onclick="validateAndGoTo(2, 3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: Need for a Digital Queue System (Part III) ══ -->
+  <div class="section" id="section-3">
+    <div class="section-header">
+      <span class="part-tag">Part III</span>
+      <h2>Need for a Digital Queue Management System</h2>
+      <p>Rate how much you agree with the following statements regarding the potential introduction of a digital queue management system at USTP Claveria.</p>
+    </div>
+
+    <div class="scale-legend">
+      <div class="legend-item"><div class="dot" style="background:var(--blue-dark)"></div>5 – Strongly Agree</div>
+      <div class="legend-item"><div class="dot" style="background:var(--blue-mid)"></div>4 – Agree</div>
+      <div class="legend-item"><div class="dot" style="background:#64748B"></div>3 – Neutral</div>
+      <div class="legend-item"><div class="dot" style="background:#F59E0B"></div>2 – Disagree</div>
+      <div class="legend-item"><div class="dot" style="background:#DC2626"></div>1 – Strongly Disagree</div>
+    </div>
+
+    <div class="card">
+      <div id="part3-items"></div>
+    </div>
+
+    <div class="error-msg" id="err-3">⚠ Please answer Items 16–20 before proceeding. (Items 21–25 are optional for non-service-personnel.)</div>
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goTo(2)">← Back</button>
+      <button class="btn btn-primary" onclick="validateAndGoTo(3, 4)">Next →</button>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: Open-Ended (Part IV) ══ -->
+  <div class="section" id="section-4">
+    <div class="section-header">
+      <span class="part-tag">Part IV</span>
+      <h2>Open-Ended Questions</h2>
+      <p>Please answer the following questions briefly and honestly. Your responses help us understand the problem more deeply.</p>
+    </div>
+
+    <div class="card">
+      <div class="open-q">
+        <label for="oe1">
+          <span class="q-num">26</span>
+          Describe your most frustrating experience with queueing at any USTP Claveria student service office.
+        </label>
+        <textarea id="oe1" placeholder="Briefly describe your experience..."></textarea>
+      </div>
+      <div class="open-q">
+        <label for="oe2">
+          <span class="q-num">27</span>
+          What specific improvements would you want to see in the queueing process at USTP Claveria?
+        </label>
+        <textarea id="oe2" placeholder="Describe what you would like to see improved..."></textarea>
+      </div>
+      <div class="open-q" style="margin-bottom:0">
+        <label for="oe3">
+          <span class="q-num">28</span>
+          If a digital queue system were available, what feature would matter most to you?
+        </label>
+        <textarea id="oe3" placeholder="e.g., real-time notifications, estimated wait time, mobile app access..."></textarea>
+      </div>
+    </div>
+
+    <p class="required-note" style="margin-bottom:16px;">* Open-ended responses are optional but highly appreciated.</p>
+
+    <div class="error-msg" id="err-submit">⚠ Something went wrong while submitting. Please try again.</div>
+
+    <div class="nav-row">
+      <button class="btn btn-outline" onclick="goTo(3)">← Back</button>
+      <button class="btn btn-gold" id="submit-btn" onclick="submitSurvey()">Submit Survey ✓</button>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS ══ -->
+  <div class="section" id="section-5">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2>Thank You!</h2>
+      <p>Your response has been successfully recorded.</p>
+      <p>Your honest feedback contributes to the improvement of student services at USTP Claveria.</p>
+      <br>
+      <p style="font-size:0.78rem; opacity:0.6;">IT 324 – Quantitative Methods · S.Y. 2025–2026 · USTP Claveria Campus</p>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script src="survey.js"></script>
+</body>
+</html>

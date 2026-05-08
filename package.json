@@ -1,0 +1,8 @@
+{
+  "name": "ustp-uat-survey",
+  "version": "1.0.0",
+  "description": "USTP Claveria Queue Management System UAT Survey",
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
+}
