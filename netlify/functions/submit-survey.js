@@ -1,6 +1,6 @@
 // netlify/functions/submit-survey.js
-// This runs as a serverless function on Netlify's servers.
-// It receives the survey data from the frontend and saves it to your Neon PostgreSQL database.
+// Receives survey data from the frontend and saves it to Neon PostgreSQL.
+// Updated for: Needs Assessment Survey (Queueing Experience at USTP Claveria)
 
 const { Client } = require('pg');
 
@@ -17,15 +17,13 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON body' }) };
   }
 
-  const { profile, functionality, func_comments, usability, usab_comments, open_ended } = body;
+  const { profile, current_experience, digital_need, open_ended } = body;
 
-  // Basic validation
-  if (!profile || !functionality || !usability) {
+  // Basic validation — require profile and current_experience (Q1–15)
+  if (!profile || !current_experience || !digital_need) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
   }
 
-  // Connect to the database using the DATABASE_URL environment variable
-  // You will set this in Netlify's dashboard (see setup guide)
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false } // Required for Neon
@@ -36,48 +34,88 @@ exports.handler = async (event) => {
 
     const query = `
       INSERT INTO survey_responses (
-        offices,
+        -- Part I: Profile
         role,
-        duration,
-        func_q1, func_q2, func_q3, func_q4, func_q5,
-        func_q6, func_q7, func_q8, func_q9, func_q10,
-        func_comments,
-        usab_q1, usab_q2, usab_q3, usab_q4, usab_q5,
-        usab_q6, usab_q7, usab_q8, usab_q9, usab_q10,
-        usab_comments,
-        oe_q1, oe_q2, oe_q3, oe_q4,
+        offices,
+        visit_frequency,
+
+        -- Part II-A: Waiting Time and Queue Length (Q1–5)
+        cur_q1, cur_q2, cur_q3, cur_q4, cur_q5,
+
+        -- Part II-B: Queue Transparency (Q6–10)
+        cur_q6, cur_q7, cur_q8, cur_q9, cur_q10,
+
+        -- Part II-C: Overall Satisfaction (Q11–15)
+        cur_q11, cur_q12, cur_q13, cur_q14, cur_q15,
+
+        -- Part III-D: Perceived Need for Digital System (Q16–20)
+        dgt_q16, dgt_q17, dgt_q18, dgt_q19, dgt_q20,
+
+        -- Part III-E: Expected Benefits / Personnel Only (Q21–25, nullable)
+        dgt_q21, dgt_q22, dgt_q23, dgt_q24, dgt_q25,
+
+        -- Part IV: Open-Ended (Q26–28)
+        oe_q26, oe_q27, oe_q28,
+
         submitted_at
       ) VALUES (
-        $1, $2, $3,
-        $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-        $14,
-        $15, $16, $17, $18, $19, $20, $21, $22, $23, $24,
-        $25,
-        $26, $27, $28, $29,
+        $1,  $2,  $3,
+        $4,  $5,  $6,  $7,  $8,
+        $9,  $10, $11, $12, $13,
+        $14, $15, $16, $17, $18,
+        $19, $20, $21, $22, $23,
+        $24, $25, $26, $27, $28,
+        $29, $30, $31,
         NOW()
       )
       RETURNING id;
     `;
 
     const values = [
-      profile.offices.join(', '),        // $1  offices (comma-separated string)
-      profile.role,                       // $2  role
-      profile.duration,                   // $3  duration
+      // Part I — Profile
+      profile.role,                          // $1
+      profile.offices.join(', '),            // $2  comma-separated string
+      profile.frequency,                     // $3
 
-      functionality.q1,  functionality.q2,  functionality.q3,  functionality.q4,  functionality.q5,
-      functionality.q6,  functionality.q7,  functionality.q8,  functionality.q9,  functionality.q10,
+      // Part II-A — Waiting Time (Q1–5)
+      current_experience.q1,                 // $4
+      current_experience.q2,                 // $5
+      current_experience.q3,                 // $6
+      current_experience.q4,                 // $7
+      current_experience.q5,                 // $8
 
-      func_comments || null,              // $14
+      // Part II-B — Transparency (Q6–10)
+      current_experience.q6,                 // $9
+      current_experience.q7,                 // $10
+      current_experience.q8,                 // $11
+      current_experience.q9,                 // $12
+      current_experience.q10,                // $13
 
-      usability.q1,  usability.q2,  usability.q3,  usability.q4,  usability.q5,
-      usability.q6,  usability.q7,  usability.q8,  usability.q9,  usability.q10,
+      // Part II-C — Satisfaction (Q11–15)
+      current_experience.q11,                // $14
+      current_experience.q12,                // $15
+      current_experience.q13,                // $16
+      current_experience.q14,                // $17
+      current_experience.q15,                // $18
 
-      usab_comments || null,              // $25
+      // Part III-D — Digital Need (Q16–20)
+      digital_need.q16,                      // $19
+      digital_need.q17,                      // $20
+      digital_need.q18,                      // $21
+      digital_need.q19,                      // $22
+      digital_need.q20,                      // $23
 
-      open_ended?.q1 || null,
-      open_ended?.q2 || null,
-      open_ended?.q3 || null,
-      open_ended?.q4 || null,
+      // Part III-E — Personnel Benefits (Q21–25, nullable)
+      digital_need.q21 || null,              // $24
+      digital_need.q22 || null,              // $25
+      digital_need.q23 || null,              // $26
+      digital_need.q24 || null,              // $27
+      digital_need.q25 || null,              // $28
+
+      // Part IV — Open-Ended
+      open_ended?.q26 || null,               // $29
+      open_ended?.q27 || null,               // $30
+      open_ended?.q28 || null,               // $31
     ];
 
     const result = await client.query(query, values);
@@ -89,7 +127,7 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error('Database error:', err);
+    console.error('Database error:', err.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Database error', detail: err.message })
