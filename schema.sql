@@ -297,6 +297,20 @@ ALTER DEFAULT PRIVILEGES FOR ROLE cloud_admin IN SCHEMA public GRANT ALL ON TABL
 
 
 --
+-- Rate limiting table: tracks per-IP submission counts
+--
+
+CREATE TABLE IF NOT EXISTS submission_rate_limits (
+    id          serial PRIMARY KEY,
+    ip_hash     varchar(64) NOT NULL,   -- SHA-256 of IP + secret (never stores raw IP)
+    created_at  timestamptz NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_rate_limits_ip_hash ON submission_rate_limits (ip_hash);
+CREATE INDEX IF NOT EXISTS idx_rate_limits_created_at ON submission_rate_limits (created_at);
+
+
+--
 -- PostgreSQL database dump complete
 --
 

@@ -64,11 +64,11 @@ function buildLikertSubsection(items, container, prefix, startNum, subsectionLab
   header.className = 'likert-scale-header';
   header.innerHTML = `
     <div class="lh-blank"></div>
-    <div class="lh-label">5<br>Str. Agree</div>
-    <div class="lh-label">4<br>Agree</div>
-    <div class="lh-label">3<br>Neutral</div>
-    <div class="lh-label">2<br>Disagree</div>
-    <div class="lh-label">1<br>Str. Dis.</div>
+    <div class="lh-label">5</div>
+    <div class="lh-label">4</div>
+    <div class="lh-label">3</div>
+    <div class="lh-label">2</div>
+    <div class="lh-label">1</div>
   `;
   container.appendChild(header);
 
@@ -78,7 +78,7 @@ function buildLikertSubsection(items, container, prefix, startNum, subsectionLab
     row.className = 'likert-row';
     let cells = `<div class="likert-statement"><strong>${qNum}.</strong> ${text}</div>`;
     for (let v = 5; v >= 1; v--) {
-      cells += `<div class="likert-cell"><input type="radio" name="${prefix}_q${qNum}" value="${v}" /></div>`;
+      cells += `<div class="likert-cell"><span class="likert-num">${v}</span><input type="radio" name="${prefix}_q${qNum}" value="${v}" /></div>`;
     }
     row.innerHTML = cells;
     row.querySelectorAll('input[type="radio"]').forEach(attachClearable);
@@ -100,14 +100,37 @@ function buildAllLikert() {
   buildLikertSubsection(SATISFACTION_ITEMS, part2, 'cur', 11, 'C. Overall Satisfaction with Current Queueing System');
 
   buildLikertSubsection(DIGITAL_NEED_ITEMS, part3, 'dgt', 16, 'D. Perceived Need and Openness to a Digital Solution');
-  buildLikertSubsection(PERSONNEL_ITEMS,    part3, 'dgt', 21, 'E. Expected Benefits (For Service Personnel Only)');
+
+  // Wrap Section E in a toggleable container
+  const sectionEWrap = document.createElement('div');
+  sectionEWrap.id = 'section-e-wrap';
+  sectionEWrap.style.display = 'none';  // hidden by default
+  part3.appendChild(sectionEWrap);
+
+  buildLikertSubsection(PERSONNEL_ITEMS, sectionEWrap, 'dgt', 21, 'E. Expected Benefits (For Service Personnel Only)');
 
   // Add note for section E
   const note = document.createElement('p');
   note.className = 'required-note';
   note.style.marginTop = '-12px';
-  note.textContent = '* Items 21–25 are intended for Service Personnel / Teller / Office Staff only. Other respondents may skip these.';
-  part3.appendChild(note);
+  note.textContent = '* Items 21–25 are intended for Service Personnel / Teller / Office Staff only.';
+  sectionEWrap.appendChild(note);
+
+  // Toggle Section E visibility based on role selection
+  document.querySelectorAll('input[name="role"]').forEach(radio => {
+    radio.addEventListener('change', toggleSectionE);
+  });
+}
+
+/* ── Section E Toggle ── */
+
+const PERSONNEL_ROLES = ['Service Personnel / Teller / Office Staff'];
+
+function toggleSectionE() {
+  const role = document.querySelector('input[name="role"]:checked')?.value || '';
+  const wrap = document.getElementById('section-e-wrap');
+  if (!wrap) return;
+  wrap.style.display = PERSONNEL_ROLES.includes(role) ? '' : 'none';
 }
 
 /* ── Consent ── */
@@ -206,6 +229,16 @@ async function submitSurvey() {
   btn.disabled = true;
   btn.textContent = 'Submitting…';
 
+  // Client-side rate limit: max 5 submissions per device
+  const subCount = parseInt(localStorage.getItem('survey_submissions') || '0');
+  if (subCount >= 5) {
+    err.textContent = '⚠ You have already submitted the maximum number of responses from this device.';
+    err.classList.add('show');
+    btn.disabled = true;
+    btn.textContent = 'Limit Reached';
+    return;
+  }
+
   // Profile
   const offices   = [...document.querySelectorAll('input[name="office"]:checked')].map(el => el.value);
   const role      = document.querySelector('input[name="role"]:checked')?.value || '';
@@ -238,7 +271,7 @@ async function submitSurvey() {
   try {
     const res = await fetch('/.netlify/functions/submit-survey', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) {
@@ -251,6 +284,9 @@ async function submitSurvey() {
       }
       throw new Error('Server error');
     }
+    // Track submission count in localStorage
+    const subCount = parseInt(localStorage.getItem('survey_submissions') || '0') + 1;
+    localStorage.setItem('survey_submissions', subCount);
     goTo(6);
   } catch (e) {
     err.classList.add('show');

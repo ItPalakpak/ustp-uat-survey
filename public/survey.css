@@ -101,6 +101,7 @@ body {
   flex: 1; max-width: 160px; padding: 14px 6px;
   text-align: center; font-size: 0.65rem; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
+  white-space: nowrap;
   color: var(--mid); border: none; background: none;
   cursor: default; border-bottom: 3px solid transparent; transition: all 0.2s;
 }
@@ -337,7 +338,8 @@ textarea { min-height: 90px; resize: vertical; }
 .likert-row:hover { background: var(--surface); border-radius: 8px; }
 .likert-statement { font-size: 0.84rem; line-height: 1.5; color: var(--dark); padding-right: 12px; }
 .likert-statement strong { font-size: 0.78rem; color: var(--blue-mid); font-weight: 700; }
-.likert-cell { display: flex; justify-content: center; align-items: center; }
+.likert-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.likert-num { display: none; font-size: 0.6rem; font-weight: 700; color: var(--mid); margin-bottom: 2px; }
 .likert-cell input[type="radio"] { width: 20px; height: 20px; accent-color: var(--blue-mid); cursor: pointer; }
 
 .scale-legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
@@ -430,8 +432,20 @@ textarea { min-height: 90px; resize: vertical; }
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-  .likert-scale-header, .likert-row { grid-template-columns: 1fr repeat(5, 36px); }
-  .step-btn { font-size: 0.58rem; padding: 10px 3px; }
+  .likert-scale-header { display: none; }
+  .likert-row { grid-template-columns: 1fr; gap: 6px; padding: 14px 0; }
+  .likert-statement { padding-right: 0; margin-bottom: 2px; }
+  .likert-row .likert-cell { display: flex; flex-direction: column; align-items: center; }
+  .likert-num { display: block; }
+  .likert-row::after {
+    content: '';
+    grid-column: 1 / -1;
+  }
+  .likert-row { grid-template-columns: repeat(5, 1fr); }
+  .likert-statement { grid-column: 1 / -1; }
+  .step-btn { font-size: 0.5rem; padding: 10px 2px; letter-spacing: 0.04em; }
+  .step-btn .step-num { width: 18px; height: 18px; font-size: 0.62rem; line-height: 18px; margin-bottom: 2px; }
+  .steps-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .card { padding: 16px; }
   .consent-box { padding: 16px 18px; }
   .privacy-block { flex-direction: column; gap: 8px; }

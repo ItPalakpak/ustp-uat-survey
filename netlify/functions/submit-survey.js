@@ -3,11 +3,17 @@
 // Updated for: Needs Assessment Survey (Queueing Experience at USTP Claveria)
 
 const { Client } = require('pg');
+const crypto = require('crypto');
 
 exports.handler = async (event) => {
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
+  }
+
+  // ── CSRF: Require X-Requested-With header ──
+  if (!event.headers['x-requested-with']) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Missing required header' }) };
   }
 
   let body;
@@ -29,9 +35,22 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing required fields' }) };
   }
 
+  // ── XSS sanitization: strip all HTML tags from text inputs ──
+  const SANITIZE_RE = /<[^>]*>/g;
+  const sanitize = (str) => (str && typeof str === 'string') ? str.replace(SANITIZE_RE, '').trim() : str;
+
   // Strip accidental PII from open-ended text fields
   const PII_PATTERN = /(\b\d{4}\s?\d{4}\s?\d{4}\b|\b\d{2}-\d{2}-\d{4}\b|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b|\b09\d{9}\b|\b\+63\d{10}\b)/g;
   const stripPII = (str) => (str && typeof str === 'string') ? str.replace(PII_PATTERN, '[REDACTED]') : str;
+
+  // ── Rate limiting: hash the IP, allow max 5 per IP in 24h ──
+  const MAX_PER_RESPONDENT = 5;
+  const RATE_WINDOW_HOURS = 24;
+  const rawIp = event.headers['x-nf-client-connection-ip']
+    || event.headers['x-forwarded-for']?.split(',')[0]
+    || event.headers['client-ip']
+    || 'unknown';
+  const ipHash = crypto.createHash('sha256').update(rawIp + process.env.DATABASE_URL).digest('hex');
 
   const client = new Client({
     connectionString: process.env.DATABASE_URL,
@@ -51,6 +70,20 @@ exports.handler = async (event) => {
         statusCode: 429,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'Survey is closed', detail: 'We have reached the maximum number of responses. Thank you for your interest!' })
+      };
+    }
+
+    // ── Rate limit: check submission count for this IP hash ──
+    const rateResult = await client.query(
+      'SELECT COUNT(*) AS cnt FROM submission_rate_limits WHERE ip_hash = $1 AND created_at > NOW() - $2::interval',
+      [ipHash, `${RATE_WINDOW_HOURS} hours`]
+    );
+    if (parseInt(rateResult.rows[0].cnt) >= MAX_PER_RESPONDENT) {
+      await client.end();
+      return {
+        statusCode: 429,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Rate limit exceeded', detail: 'You have reached the maximum number of submissions. Thank you for your participation!' })
       };
     }
 
@@ -98,10 +131,10 @@ exports.handler = async (event) => {
     `;
 
     const values = [
-      // Part I — Profile
-      profile.role,                          // $1
-      profile.offices.join(', '),            // $2  comma-separated string
-      profile.frequency,                     // $3
+      // Part I — Profile (sanitized)
+      sanitize(profile.role),                // $1
+      profile.offices.map(o => sanitize(o)).join(', '),  // $2
+      sanitize(profile.frequency),           // $3
 
       // Part II-A — Waiting Time (Q1–5)
       current_experience.q1,                 // $4
@@ -138,16 +171,25 @@ exports.handler = async (event) => {
       digital_need.q24 || null,              // $27
       digital_need.q25 || null,              // $28
 
-      // Part IV — Open-Ended (PII stripped)
-      stripPII(open_ended?.q26) || null,    // $29
-      stripPII(open_ended?.q27) || null,    // $30
-      stripPII(open_ended?.q28) || null,    // $31
+      // Part IV — Open-Ended (sanitized + PII stripped)
+      stripPII(sanitize(open_ended?.q26)) || null,    // $29
+      stripPII(sanitize(open_ended?.q27)) || null,    // $30
+      stripPII(sanitize(open_ended?.q28)) || null,    // $31
 
       // Consent
       true,                                   // $32  consent_given
     ];
 
     const result = await client.query(query, values);
+
+    // ── Log this submission for rate limiting ──
+    await client.query(
+      'INSERT INTO submission_rate_limits (ip_hash) VALUES ($1)',
+      [ipHash]
+    );
+
+    // ── Clean up expired rate limit rows (housekeeping) ──
+    await client.query('DELETE FROM submission_rate_limits WHERE created_at < NOW() - $1::interval', [`${RATE_WINDOW_HOURS} hours`]);
 
     return {
       statusCode: 200,
