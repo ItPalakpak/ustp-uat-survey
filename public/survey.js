@@ -109,6 +109,24 @@ function buildAllLikert() {
   part3.appendChild(note);
 }
 
+/* ── Consent ── */
+
+function updateConsentBtn() {
+  const boxes = document.querySelectorAll('input[name="consent"]');
+  const allChecked = [...boxes].every(cb => cb.checked);
+  document.getElementById('consent-btn').disabled = !allChecked;
+}
+
+function validateConsent() {
+  const boxes = document.querySelectorAll('input[name="consent"]');
+  const allChecked = [...boxes].every(cb => cb.checked);
+  if (!allChecked) {
+    document.getElementById('err-consent').classList.add('show');
+    return;
+  }
+  goTo(2);
+}
+
 /* ── Navigation ── */
 
 let currentStep = 0;
